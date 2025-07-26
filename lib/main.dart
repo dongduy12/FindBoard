@@ -35,16 +35,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/pe_system/presentation/providers/theme_provider.dart';
 import 'features/pe_system/presentation/providers/code_provider.dart';
 import 'features/pe_system/presentation/providers/dataCloud_provider.dart';
+import 'features/pe_system/presentation/providers/language_provider.dart';
 import 'features/pe_system/presentation/screens/sign_in_page.dart';
 import 'features/pe_system/presentation/screens/navigation_rail_page.dart';
 import 'features/pe_system/presentation/screens/pe_system_screen.dart';
 import 'core/network/api_client.dart';
 import 'features/pe_system/data/datasources/remote_datasource.dart';
+import 'features/pe_system/data/datasources/local_datasource.dart';
+import 'features/pe_system/data/datasources/database_helper.dart';
 import 'features/pe_system/data/repositories/code_repository_impl.dart';
 import 'features/pe_system/domain/usecases/manage_codes_usecase.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'core/constants/colors.dart';
 
 void main() async {
@@ -52,17 +57,24 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   final apiClient = ApiClient(baseUrl: 'http://10.220.130.119:9090/api/search');
   final remoteDataSource = RemoteDataSource(apiClient: apiClient);
+  final localDataSource = LocalDataSource(databaseHelper: DatabaseHelper.instance);
   final repository = CodeRepositoryImpl(remoteDataSource: remoteDataSource);
   final useCase = ManageCodesUseCase(repository: repository);
-  final codeProvider = CodeProvider(useCase: useCase);
+  final codeProvider = CodeProvider(
+    useCase: useCase,
+    localDataSource: localDataSource,
+    connectivity: Connectivity(),
+  );
   final themeProvider = ThemeProvider();
   final dataCloudProvider = DatacloudProvider(); // Khởi tạo DataCloudProvider
+  final languageProvider = LanguageProvider();
 
   // Khởi tạo async cho các provider
   await Future.wait([
     codeProvider.initialize(),
     themeProvider.initialize(),
     dataCloudProvider.fetchDataCloud(),
+    languageProvider.initialize(),
   ]);
 
   runApp(
@@ -71,6 +83,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => codeProvider),
         ChangeNotifierProvider(create: (_) => themeProvider),
         ChangeNotifierProvider(create: (_) => dataCloudProvider),
+        ChangeNotifierProvider(create: (_) => languageProvider),
       ],
       child: const MyApp(),
     ),
@@ -218,6 +231,17 @@ class _MyAppState extends State<MyApp> {
         theme: lightTheme,
         darkTheme: darkTheme,
         themeMode: themeProvider.themeMode,
+        locale: Provider.of<LanguageProvider>(context).locale,
+        supportedLocales: const [
+          Locale('vi'),
+          Locale('en'),
+          Locale('zh'),
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         initialRoute: codeProvider.isLoggedIn ? '/navigation' : '/sign-in',
         routes: {
           '/sign-in': (context) => const SignInPage(),

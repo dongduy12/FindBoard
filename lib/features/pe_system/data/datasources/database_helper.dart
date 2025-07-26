@@ -2,15 +2,20 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/local_code_item_db.dart';
+import '../models/local_search_list_db.dart';
 
 class DatabaseHelper {
   static const _databaseName = "PESystem.db";
   static const _databaseVersion = 1;
   static const tableSerialNumbers = 'serial_numbers';
+  static const tableSearchLists = 'search_lists';
   static const columnId = '_id';
   static const columnSerialNumber = 'serialNumber';
   static const columnListId = 'listId';
   static const columnIsFound = 'isFound';
+  static const columnListName = 'listName';
+  static const columnCreatedAt = 'createdAt';
+  static const columnCreatedBy = 'createdBy';
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -38,6 +43,14 @@ class DatabaseHelper {
             UNIQUE ($columnSerialNumber, $columnListId)
           )
           ''');
+    await db.execute('''
+          CREATE TABLE $tableSearchLists (
+            $columnListId TEXT PRIMARY KEY,
+            $columnListName TEXT,
+            $columnCreatedAt TEXT,
+            $columnCreatedBy TEXT
+          )
+          ''');
   }
 
   Future<int> insertCode(LocalCodeItemDb code) async {
@@ -62,6 +75,26 @@ class DatabaseHelper {
       }
       await batch.commit(noResult: true);
     });
+  }
+
+  Future<void> insertSearchLists(List<LocalSearchListDb> lists) async {
+    if (lists.isEmpty) return;
+    Database db = await instance.database;
+    await db.transaction((txn) async {
+      await txn.delete(tableSearchLists);
+      Batch batch = txn.batch();
+      for (var list in lists) {
+        batch.insert(tableSearchLists, list.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      await batch.commit(noResult: true);
+    });
+  }
+
+  Future<List<LocalSearchListDb>> getSearchLists() async {
+    Database db = await instance.database;
+    final maps = await db.query(tableSearchLists);
+    return List.generate(maps.length, (i) => LocalSearchListDb.fromMap(maps[i]));
   }
 
   Future<List<LocalCodeItemDb>> getCodesByListId(String listId) async {
@@ -117,9 +150,15 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> deleteAllSearchLists() async {
+    Database db = await instance.database;
+    await db.delete(tableSearchLists);
+  }
+
   Future<void> clearAllData() async {
     Database db = await instance.database;
     await db.delete(tableSerialNumbers);
+    await db.delete(tableSearchLists);
   }
 
   Future<void> close() async {

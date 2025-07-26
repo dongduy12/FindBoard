@@ -4,9 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../../../core/error/exceptions.dart';
-import '../../data/datasources/database_helper.dart';
-import '../../data/models/local_code_item_db.dart';
+import '../../data/datasources/local_datasource.dart';
 import '../../domain/entities/code_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/search_list_entity.dart';
@@ -14,6 +14,8 @@ import '../../domain/usecases/manage_codes_usecase.dart';
 
 class CodeProvider with ChangeNotifier {
   final ManageCodesUseCase useCase;
+  final LocalDataSource localDataSource;
+  final Connectivity connectivity;
 
   List<SearchListEntity> _searchLists = [];
   List<CodeEntity> _codeList = [];
@@ -71,7 +73,11 @@ class CodeProvider with ChangeNotifier {
   String? get notes => _notes;
   String get handOverStatus => _handOverStatus;
 
-  CodeProvider({required this.useCase});
+  CodeProvider({
+    required this.useCase,
+    required this.localDataSource,
+    required this.connectivity,
+  });
 
   Future<void> initialize() async {
     if (!_isInitialized) {
@@ -85,6 +91,11 @@ class CodeProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     notifyListeners();
+  }
+
+  Future<bool> _isConnected() async {
+    final result = await connectivity.checkConnectivity();
+    return result != ConnectivityResult.none;
   }
 
   Future<bool> login(String email, String password) async {
@@ -133,91 +144,90 @@ class CodeProvider with ChangeNotifier {
   }
 
   Future<void> fetchSearchList() async {
-    if (_searchLists.isNotEmpty) {
-      print('Search lists already loaded: $_searchLists');
-      return;
-    }
     _isLoading = true;
     _error = null;
     notifyListeners();
-    try {
-      _searchLists = await useCase.getSearchList();
-      print('Fetched _searchLists: $_searchLists');
-
-      _selectedSearchListIndex = null;
-      _recentlyScannedCodes = [];
-      print('Set _selectedSearchListIndex: $_selectedSearchListIndex');
-      _updateCodeList();
-    } catch (e) {
-      _error = e.toString();
-      print('Fetch error: $_error');
+    bool online = await _isConnected();
+    if (online) {
+      try {
+        _searchLists = await useCase.getSearchList();
+        await localDataSource.saveSearchLists(_searchLists);
+      } catch (e) {
+        _error = e.toString();
+        print('Fetch error: $_error');
+      }
     }
+    if (!online || _searchLists.isEmpty) {
+      try {
+        _searchLists = await localDataSource.getSearchLists();
+      } catch (e) {
+        _error ??= e.toString();
+      }
+    }
+    _selectedSearchListIndex = null;
+    _recentlyScannedCodes = [];
+    _updateCodeList();
     _isLoading = false;
     notifyListeners();
   }
 
   Future<void> updateScannedStatus(int searchListId, String serialNumber, bool isScanned) async {
     try {
-      // Cập nhật danh sách _foundCodes và _codeList
       if (_foundCodes.contains(serialNumber)) {
-        print('SerialNumber $serialNumber already found, updating position');
         _orderedFoundCodes.remove(serialNumber);
         _recentlyScannedCodes.remove(serialNumber);
         _orderedFoundCodes.insert(0, serialNumber);
         _recentlyScannedCodes.insert(0, serialNumber);
-
-        final existingCode = _codeList.firstWhere(
-              (item) => item.serialNumber == serialNumber,
-          orElse: () => CodeEntity(
-            id: '',
-            serialNumber: serialNumber,
-            modelName: '',
-            shelfCode: '',
-            isFound: true,
-          ),
-        );
-        _codeList = [
-          existingCode.copyWith(isFound: true, foundOrder: 1),
-          ..._codeList
-              .where((item) => item.serialNumber != serialNumber)
-              .map((item) => item.isFound && _orderedFoundCodes.contains(item.serialNumber)
-              ? item.copyWith(foundOrder: _orderedFoundCodes.indexOf(item.serialNumber) + 1)
-              : item),
-        ];
-        notifyListeners();
-        return;
-      }
-
-      // Gọi API để cập nhật trạng thái trên server
-      final success = await useCase.updateScannedStatus(searchListId, serialNumber, isScanned);
-      if (success) {
+      } else {
+        bool online = await _isConnected();
+        if (online) {
+          await useCase.updateScannedStatus(searchListId, serialNumber, isScanned);
+        }
+        await localDataSource.updateFoundStatus(serialNumber, searchListId.toString(), isScanned);
         _foundCodes.add(serialNumber);
         _orderedFoundCodes.insert(0, serialNumber);
         _recentlyScannedCodes.insert(0, serialNumber);
-        final existingCode = _codeList.firstWhere(
-              (item) => item.serialNumber == serialNumber,
-          orElse: () => CodeEntity(
-            id: '',
-            serialNumber: serialNumber,
-            modelName: '',
-            shelfCode: '',
-            isFound: true,
-          ),
-        );
-        _codeList = [
-          existingCode.copyWith(isFound: true, foundOrder: 1),
-          ..._codeList
-              .where((item) => item.serialNumber != serialNumber)
-              .map((item) => item.isFound && _orderedFoundCodes.contains(item.serialNumber)
-              ? item.copyWith(foundOrder: _orderedFoundCodes.indexOf(item.serialNumber) + 1)
-              : item),
-        ];
-        notifyListeners();
       }
+
+      final existingCode = _codeList.firstWhere(
+            (item) => item.serialNumber == serialNumber,
+        orElse: () => CodeEntity(
+          id: '',
+          serialNumber: serialNumber,
+          modelName: '',
+          shelfCode: '',
+          isFound: true,
+        ),
+      );
+      _codeList = [
+        existingCode.copyWith(isFound: true, foundOrder: 1),
+        ..._codeList
+            .where((item) => item.serialNumber != serialNumber)
+            .map((item) => item.isFound && _orderedFoundCodes.contains(item.serialNumber)
+                ? item.copyWith(foundOrder: _orderedFoundCodes.indexOf(item.serialNumber) + 1)
+                : item),
+      ];
+      notifyListeners();
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
-      print('UpdateScannedStatus error: $_error');
       notifyListeners();
+    }
+  }
+
+  Future<void> syncFoundCodes() async {
+    if (!await _isConnected()) return;
+    try {
+      final lists = await localDataSource.getSearchLists();
+      for (var list in lists) {
+        final found = await localDataSource.getFoundCodesByListId(list.id);
+        for (var code in found) {
+          try {
+            await useCase.updateScannedStatus(int.parse(list.id), code.serialNumber, true);
+          } catch (_) {}
+        }
+      }
+    } catch (e) {
+      print('syncFoundCodes error: $e');
     }
   }
 

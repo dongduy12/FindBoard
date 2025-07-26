@@ -6,6 +6,7 @@ import '../../../../core/constants/colors.dart';
 import '../providers/code_provider.dart';
 import '../widgets/code_item.dart';
 import 'qr_scan_page.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class PESystemScreen extends StatefulWidget {
   const PESystemScreen({super.key});
@@ -165,9 +166,10 @@ class _PESystemScreenState extends State<PESystemScreen> {
     );
   }
 
-  void _syncSearchLists() {
+  void _syncSearchLists() async {
     final provider = Provider.of<CodeProvider>(context, listen: false);
-    provider.fetchSearchList();
+    await provider.syncFoundCodes();
+    await provider.fetchSearchList();
     print('Sync search lists triggered');
   }
 
@@ -175,7 +177,7 @@ class _PESystemScreenState extends State<PESystemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search'),
+        title: Text(AppLocalizations.of(context, 'search')),
         //backgroundColor: const Color(0xFF0055A5),
         elevation: 0,
       ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/dataCloud_provider.dart';
 import '../widgets/data_cloud_item.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class DataCloudScreen extends StatefulWidget {
   const DataCloudScreen({super.key});
@@ -38,16 +39,16 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
       items: [
         PopupMenuItem(
           value: 'download',
-          child: const ListTile(
-            leading: Icon(Icons.download),
-            title: Text('Download'),
+          child: ListTile(
+            leading: const Icon(Icons.download),
+            title: Text(AppLocalizations.of(context, 'download')),
           ),
         ),
         PopupMenuItem(
           value: 'delete',
-          child: const ListTile(
-            leading: Icon(Icons.delete),
-            title: Text('Delete'),
+          child: ListTile(
+            leading: const Icon(Icons.delete),
+            title: Text(AppLocalizations.of(context, 'delete')),
           ),
         ),
       ],
@@ -72,12 +73,12 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Confirm Delete'),
+          title: Text(AppLocalizations.of(context, 'confirmDelete')),
           content: const Text('This action cannot be undone!'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context, 'cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -89,7 +90,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                   );
                 }
               },
-              child: const Text('Confirm'),
+              child: Text(AppLocalizations.of(context, 'confirmDelete')),
             ),
           ],
         ),
@@ -120,7 +121,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
       builder: (context, provider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('DataCloud'),
+            title: Text(AppLocalizations.of(context, 'dataCloud')),
             //backgroundColor: const Color(0xFF0055A5),
             elevation: 0,
             actions: [
@@ -130,10 +131,10 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('Search'),
+                      title: Text(AppLocalizations.of(context, 'search')),
                       content: TextField(
                         controller: _searchController,
-                        decoration: const InputDecoration(labelText: 'Enter keyword'),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context, 'enterKeyword')),
                       ),
                       actions: [
                         TextButton(
@@ -141,7 +142,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                             provider.searchDataCloud(_searchController.text);
                             Navigator.pop(context);
                           },
-                          child: const Text('Search'),
+                          child: Text(AppLocalizations.of(context, 'search')),
                         ),
                       ],
                     ),
@@ -170,7 +171,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                         provider.fetchDataCloud(path: provider.pathHistory.last);
                       }: null,
                       color: provider.pathHistory.length > 1 ? Colors.blue : Colors.grey,
-                      tooltip: 'Back to previous folder',
+                      tooltip: AppLocalizations.of(context, 'back'),
                     ),
                   ],
                 ),
@@ -181,7 +182,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                       : provider.dataCloudError != null
                       ? Center(child: Text(provider.dataCloudError!, style: const TextStyle(color: Colors.red)))
                       : provider.dataCloudResponse == null || provider.dataCloudResponse!.items.isEmpty
-                      ? const Center(child: Text('No items found'))
+                      ? Center(child: Text(AppLocalizations.of(context, 'noItemsFound')))
                       : ListView.builder(
                     itemCount: provider.dataCloudResponse!.items.length,
                     itemBuilder: (context, index) {
@@ -220,7 +221,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                     ElevatedButton.icon(
                       onPressed: () => _pickFiles(),
                       icon: const Icon(Icons.upload_file),
-                      label: const Text('Upload File'),
+                      label: Text(AppLocalizations.of(context, 'uploadFile')),
                     ),
                     // ElevatedButton.icon(
                     //   onPressed: () => _pickFiles(isFolder: true),
@@ -232,7 +233,7 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: const Text('New Folder'),
+                            title: Text(AppLocalizations.of(context, 'newFolder')),
                             content: TextField(
                               controller: _folderNameController,
                               decoration: const InputDecoration(labelText: 'Folder Name'),
@@ -244,14 +245,14 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                                   Navigator.pop(context);
                                   _folderNameController.clear();
                                 },
-                                child: const Text('Create'),
+                                child: Text(AppLocalizations.of(context, 'create')),
                               ),
                             ],
                           ),
                         );
                       },
                       icon: const Icon(Icons.create_new_folder),
-                      label: const Text('New Folder'),
+                      label: Text(AppLocalizations.of(context, 'newFolder')),
                     ),
                   ],
                 )

@@ -5,26 +5,10 @@ import 'package:mobile_app/features/pe_system/presentation/screens/home_page.dar
 import 'package:mobile_app/features/pe_system/presentation/screens/settings_page.dart';
 import 'package:mobile_app/features/pe_system/presentation/screens/sign_in_page.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../providers/code_provider.dart';
 
 
-const _navBarItems = [
-  BottomNavigationBarItem(
-    icon: Icon(Icons.home_outlined),
-    activeIcon: Icon(Icons.home_rounded),
-    label: 'Home',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.bookmark_border_outlined),
-    activeIcon: Icon(Icons.bookmark_rounded),
-    label: 'Detail',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.settings_outlined),
-    activeIcon: Icon(Icons.settings_rounded),
-    label: 'Settings',
-  ),
-];
 
 class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key});
@@ -66,7 +50,23 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
       ),
       bottomNavigationBar: isSmallScreen
           ? BottomNavigationBar(
-        items: _navBarItems,
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home_rounded),
+            label: AppLocalizations.of(context, 'home'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.bookmark_border_outlined),
+            activeIcon: const Icon(Icons.bookmark_rounded),
+            label: AppLocalizations.of(context, 'detail'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings_outlined),
+            activeIcon: const Icon(Icons.settings_rounded),
+            label: AppLocalizations.of(context, 'settings'),
+          ),
+        ],
         currentIndex: provider.selectedIndex,
         onTap: (int index) {
           provider.setSelectedIndex(index);
@@ -82,21 +82,21 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                 provider.setSelectedIndex(index);
               },
               extended: isLargeScreen,
-              destinations: const[
+              destinations: [
                 NavigationRailDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded),
-                  label: Text('Home'),
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home_rounded),
+                  label: Text(AppLocalizations.of(context, 'home')),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.bookmark_border_outlined),
-                  selectedIcon: Icon(Icons.bookmark_rounded),
-                  label: Text('Detail'),
+                  icon: const Icon(Icons.bookmark_border_outlined),
+                  selectedIcon: const Icon(Icons.bookmark_rounded),
+                  label: Text(AppLocalizations.of(context, 'detail')),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings_rounded),
-                  label: Text('Settings'),
+                  icon: const Icon(Icons.settings_outlined),
+                  selectedIcon: const Icon(Icons.settings_rounded),
+                  label: Text(AppLocalizations.of(context, 'settings')),
                 ),
               ],
             ),
