@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class QRScanPage extends StatefulWidget {
   final Function(String) onCodeScanned;
@@ -37,7 +38,7 @@ class _QRScanPageState extends State<QRScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quét mã QR'),
+        title: Text(AppLocalizations.of(context, 'qrScan')),
         backgroundColor: AppColors.background,
       ),
       body: Stack(

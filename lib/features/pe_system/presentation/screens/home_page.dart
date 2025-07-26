@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/core/constants/colors.dart';
 import 'package:mobile_app/features/pe_system/presentation/screens/retest_screen.dart';
+import '../../../../core/localization/app_localizations.dart';
 import 'data_cloud_screen.dart';
 import 'pe_system_screen.dart';
 class HomePage extends StatelessWidget {
@@ -12,7 +13,7 @@ class HomePage extends StatelessWidget {
     final crossAxisCount = (width ~/ 200).clamp(2, 4);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context, 'home'))),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -25,7 +26,7 @@ class HomePage extends StatelessWidget {
                 _buildFunctionCard(
                   context,
                   icon: Icons.qr_code_scanner,
-                  label:'Search List',
+                  label: AppLocalizations.of(context, 'searchList'),
                   onTap:(){
                     print('Navigating to PESystemScreen');
                     Navigator.push(
@@ -37,7 +38,7 @@ class HomePage extends StatelessWidget {
                 _buildFunctionCard(
                   context,
                   icon: Icons.run_circle,
-                  label: 'Retest',
+                  label: AppLocalizations.of(context, 'retest'),
                   onTap: () {
                     print('Navigating to RetestScreen');
                     Navigator.push(
@@ -49,7 +50,7 @@ class HomePage extends StatelessWidget {
                 _buildFunctionCard(
                   context,
                   icon: Icons.cloud,
-                  label: 'DataCloud',
+                  label: AppLocalizations.of(context, 'dataCloud'),
                   onTap: () {
                     print('Navigating to DataCloudScreen');
                     Navigator.push(

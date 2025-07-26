@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:mobile_app/core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../providers/code_provider.dart';
 
 class RetestScreen extends StatefulWidget {
@@ -48,7 +49,7 @@ class _RetestScreenState extends State<RetestScreen> {
       builder: (context, provider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Retest'),
+            title: Text(AppLocalizations.of(context, 'retest')),
             //backgroundColor: const Color(0xFF0055A5),
             elevation: 0,
           ),
@@ -63,9 +64,9 @@ class _RetestScreenState extends State<RetestScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Quét QR',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      Text(
+                        AppLocalizations.of(context, 'qrScan'),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                       ),
                       Switch(
                         value: !_isManualInput, // Ngược lại để "Quét QR" bật khi Switch ON
@@ -98,7 +99,7 @@ class _RetestScreenState extends State<RetestScreen> {
                     TextField(
                       controller: _serialNumberController,
                       decoration: InputDecoration(
-                        labelText: 'Nhập Serial Number...',
+                        labelText: AppLocalizations.of(context, 'serialNumber'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -134,7 +135,7 @@ class _RetestScreenState extends State<RetestScreen> {
                       provider.scannedSerialNumber!.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     Text(
-                      'SerialNumber: ${provider.scannedSerialNumber}',
+                      "${AppLocalizations.of(context, 'serialNumber')}: ${provider.scannedSerialNumber}",
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
@@ -143,7 +144,7 @@ class _RetestScreenState extends State<RetestScreen> {
                     const SizedBox(height: 24),
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: 'Select Status',
+                        labelText: AppLocalizations.of(context, 'selectStatus'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -166,7 +167,7 @@ class _RetestScreenState extends State<RetestScreen> {
                     const SizedBox(height: 16),
                     TextField(
                       decoration: InputDecoration(
-                        labelText: 'Results',
+                        labelText: AppLocalizations.of(context, 'results'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -192,7 +193,7 @@ class _RetestScreenState extends State<RetestScreen> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                       ),
-                      child: const Text('Import Photo'),
+                      child: Text(AppLocalizations.of(context, 'importPhoto')),
                     ),
                     if (provider.retestImage != null) ...[
                       const SizedBox(height: 16),
@@ -218,7 +219,7 @@ class _RetestScreenState extends State<RetestScreen> {
                           print('After submit: error=${provider.retestError}');
                           if (provider.retestError == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Retest submitted successfully!')),
+                              SnackBar(content: Text(AppLocalizations.of(context, 'retestSuccess'))),
                             );
                             Navigator.pop(context);
                           }
@@ -231,7 +232,7 @@ class _RetestScreenState extends State<RetestScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                         ),
-                        child: const Text('Submit'),
+                        child: Text(AppLocalizations.of(context, 'submit')),
                       ),
                     ),
                     if (provider.retestError != null) ...[
