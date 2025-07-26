@@ -166,9 +166,10 @@ class _PESystemScreenState extends State<PESystemScreen> {
     );
   }
 
-  void _syncSearchLists() {
+  void _syncSearchLists() async {
     final provider = Provider.of<CodeProvider>(context, listen: false);
-    provider.fetchSearchList();
+    await provider.syncFoundCodes();
+    await provider.fetchSearchList();
     print('Sync search lists triggered');
   }
 

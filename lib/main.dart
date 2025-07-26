@@ -45,8 +45,11 @@ import 'features/pe_system/presentation/screens/navigation_rail_page.dart';
 import 'features/pe_system/presentation/screens/pe_system_screen.dart';
 import 'core/network/api_client.dart';
 import 'features/pe_system/data/datasources/remote_datasource.dart';
+import 'features/pe_system/data/datasources/local_datasource.dart';
+import 'features/pe_system/data/datasources/database_helper.dart';
 import 'features/pe_system/data/repositories/code_repository_impl.dart';
 import 'features/pe_system/domain/usecases/manage_codes_usecase.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'core/constants/colors.dart';
 
 void main() async {
@@ -54,9 +57,14 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   final apiClient = ApiClient(baseUrl: 'http://10.220.130.119:9090/api/search');
   final remoteDataSource = RemoteDataSource(apiClient: apiClient);
+  final localDataSource = LocalDataSource(databaseHelper: DatabaseHelper.instance);
   final repository = CodeRepositoryImpl(remoteDataSource: remoteDataSource);
   final useCase = ManageCodesUseCase(repository: repository);
-  final codeProvider = CodeProvider(useCase: useCase);
+  final codeProvider = CodeProvider(
+    useCase: useCase,
+    localDataSource: localDataSource,
+    connectivity: Connectivity(),
+  );
   final themeProvider = ThemeProvider();
   final dataCloudProvider = DatacloudProvider(); // Khởi tạo DataCloudProvider
   final languageProvider = LanguageProvider();
