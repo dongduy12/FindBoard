@@ -35,9 +35,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/pe_system/presentation/providers/theme_provider.dart';
 import 'features/pe_system/presentation/providers/code_provider.dart';
 import 'features/pe_system/presentation/providers/dataCloud_provider.dart';
+import 'features/pe_system/presentation/providers/language_provider.dart';
 import 'features/pe_system/presentation/screens/sign_in_page.dart';
 import 'features/pe_system/presentation/screens/navigation_rail_page.dart';
 import 'features/pe_system/presentation/screens/pe_system_screen.dart';
@@ -57,12 +59,14 @@ void main() async {
   final codeProvider = CodeProvider(useCase: useCase);
   final themeProvider = ThemeProvider();
   final dataCloudProvider = DatacloudProvider(); // Khởi tạo DataCloudProvider
+  final languageProvider = LanguageProvider();
 
   // Khởi tạo async cho các provider
   await Future.wait([
     codeProvider.initialize(),
     themeProvider.initialize(),
     dataCloudProvider.fetchDataCloud(),
+    languageProvider.initialize(),
   ]);
 
   runApp(
@@ -71,6 +75,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => codeProvider),
         ChangeNotifierProvider(create: (_) => themeProvider),
         ChangeNotifierProvider(create: (_) => dataCloudProvider),
+        ChangeNotifierProvider(create: (_) => languageProvider),
       ],
       child: const MyApp(),
     ),
@@ -218,6 +223,17 @@ class _MyAppState extends State<MyApp> {
         theme: lightTheme,
         darkTheme: darkTheme,
         themeMode: themeProvider.themeMode,
+        locale: Provider.of<LanguageProvider>(context).locale,
+        supportedLocales: const [
+          Locale('vi'),
+          Locale('en'),
+          Locale('zh'),
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         initialRoute: codeProvider.isLoggedIn ? '/navigation' : '/sign-in',
         routes: {
           '/sign-in': (context) => const SignInPage(),
