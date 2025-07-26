@@ -8,12 +8,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final crossAxisCount = (width ~/ 200).clamp(2, 4);
+
     return Scaffold(
+      appBar: AppBar(title: const Text('Home')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: GridView.count(
-              crossAxisCount: 2,//2 card mỗi dòng
+              crossAxisCount: crossAxisCount,
               crossAxisSpacing: 16.0,
               mainAxisSpacing: 16.0,
               childAspectRatio: 1.0,

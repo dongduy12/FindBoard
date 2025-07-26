@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/core/constants/colors.dart';
 import 'package:mobile_app/features/pe_system/presentation/screens/home_page.dart';
 import 'package:provider/provider.dart';
 import '../providers/code_provider.dart';
@@ -26,9 +27,17 @@ class SignInPage extends StatelessWidget {
     final provider = Provider.of<CodeProvider>(context);
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.background, AppColors.buttonBlue],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
             child: MediaQuery
                 .of(context)
                 .size
