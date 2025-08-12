@@ -64,7 +64,7 @@ class SignInPage extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }
   // Widget build(BuildContext context) {
