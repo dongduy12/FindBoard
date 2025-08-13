@@ -14,7 +14,7 @@ class ApiClient {
           HttpClient()
             ..badCertificateCallback =
                 (X509Certificate cert, String host, int port) =>
-                    host == 'pe-vnmbd-cns.myfiinet.com',
+                    host == 'pe-vnmbd-nvidia-cns.myfiinet.com',
         );
 
   Future<dynamic> get(String endpoint) async {
