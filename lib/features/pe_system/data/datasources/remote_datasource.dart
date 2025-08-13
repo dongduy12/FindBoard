@@ -11,7 +11,7 @@ class RemoteDataSource {
 
   Future<List<SearchListModel>> getSearchList() async {
     try {
-      final response = await apiClient.get('/GetSearchList');
+      final response = await apiClient.get('/getsearchList');
       print('API GetSearchList Response: $response');
       if (response['success'] != true || response['data'] == null) {
         throw ServerException(response['message'] ?? 'Không thể lấy danh sách mã');
