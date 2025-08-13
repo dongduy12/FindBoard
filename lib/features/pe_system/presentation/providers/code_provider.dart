@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../../../core/error/exceptions.dart';
@@ -358,9 +359,10 @@ class CodeProvider with ChangeNotifier {
 
     try {
       print('Sending: serialNumber=$_scannedSerialNumber, status=$_retestResult, employeeId=$_employeeId, notes=$_notes, handOverStatus=$_handOverStatus, imagePath=${_retestImage!.path}');
+      final client = _createIoClient();
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://10.220.130.119:9090/api/RetestResult/submit-with-img'),
+        Uri.parse('https://pe-vnmbd-cns.myfiinet.com:9090/api/RetestResult/submit-with-img'),
       );
 
       request.fields['serialNumber'] = _scannedSerialNumber!;
@@ -370,7 +372,7 @@ class CodeProvider with ChangeNotifier {
       request.fields['handOverStatus'] = _handOverStatus;
       request.files.add(await http.MultipartFile.fromPath('image', _retestImage!.path));
 
-      var response = await request.send().timeout(const Duration(seconds: 60));
+      var response = await client.send(request).timeout(const Duration(seconds: 60));
       print('API response status: ${response.statusCode}');
       var responseBody = await http.Response.fromStream(response);
       print('API response body: ${responseBody.body}');
@@ -399,8 +401,9 @@ class CodeProvider with ChangeNotifier {
   // Lấy kết quả Retest từ API
   Future<Map<String, dynamic>> fetchRetestResult(String serialNumber) async {
     try {
-      final response = await http.get(
-        Uri.parse('http://10.220.130.119:9090/api/RetestResult/get-result/$serialNumber'),
+      final client = _createIoClient();
+      final response = await client.get(
+        Uri.parse('https://pe-vnmbd-cns.myfiinet.com:9090/api/RetestResult/get-result/$serialNumber'),
       );
 
       if (response.statusCode == 200) {
@@ -424,5 +427,13 @@ class CodeProvider with ChangeNotifier {
   // Phương thức private để gọi trong các hàm khác
   Future<void> _requestCameraPermission() async {
     await requestCameraPermission();
+  }
+
+  http.Client _createIoClient() {
+    final ioClient = HttpClient()
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) =>
+              host == 'pe-vnmbd-cns.myfiinet.com';
+    return IOClient(ioClient);
   }
 }

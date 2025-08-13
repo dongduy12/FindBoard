@@ -55,7 +55,7 @@ import 'core/constants/colors.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  final apiClient = ApiClient(baseUrl: 'http://pe-vnmbd-nvidia-cns.myfiinet.com:9090/api/search');
+  final apiClient = ApiClient(baseUrl: 'https://pe-vnmbd-cns.myfiinet.com:9090/api/search');
   final remoteDataSource = RemoteDataSource(apiClient: apiClient);
   final localDataSource = LocalDataSource(databaseHelper: DatabaseHelper.instance);
   final repository = CodeRepositoryImpl(remoteDataSource: remoteDataSource);
