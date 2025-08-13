@@ -25,7 +25,7 @@ class DatacloudProvider with ChangeNotifier {
     try {
       final normalizedPath = normalizePath(path ?? _pathHistory.last);
       final response = await http
-          .get(Uri.parse('http://10.220.130.119:8000/api/data/get-data?path=${Uri.encodeComponent(normalizedPath)}'))
+          .get(Uri.parse('http://pe-vnmbd-nvidia-cns.myfiinet.com:8000/api/data/get-data?path=${Uri.encodeComponent(normalizedPath)}'))
           .timeout(const Duration(seconds: 30));
       if (response.statusCode == 200) {
         _dataCloudResponse = DataCloudResponse.fromJson(jsonDecode(response.body));
@@ -51,7 +51,7 @@ class DatacloudProvider with ChangeNotifier {
     try {
       final currentPath = normalizePath(_pathHistory.last);
       final response = await http
-          .get(Uri.parse('http://10.220.130.119:8000/api/data/search?keyword=${Uri.encodeComponent(keyword)}&path=${Uri.encodeComponent(currentPath)}'))
+          .get(Uri.parse('http://pe-vnmbd-nvidia-cns.myfiinet.com:8000/api/data/search?keyword=${Uri.encodeComponent(keyword)}&path=${Uri.encodeComponent(currentPath)}'))
           .timeout(const Duration(seconds: 30));
       if (response.statusCode == 200) {
         _dataCloudResponse = DataCloudResponse.fromJson(jsonDecode(response.body));
@@ -69,7 +69,7 @@ class DatacloudProvider with ChangeNotifier {
   Future<void> deleteItem(String path, String type) async {
     try {
       final response = await http.post(
-        Uri.parse('http://10.220.130.119:8000/api/data/delete-items'),
+        Uri.parse('http://pe-vnmbd-nvidia-cns.myfiinet.com:8000/api/data/delete-items'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode([{'path': normalizePath(path), 'type': type}]),
       ).timeout(const Duration(seconds: 30));
@@ -88,7 +88,7 @@ class DatacloudProvider with ChangeNotifier {
     try {
       final currentPath = normalizePath(_pathHistory.last);
       final response = await http.post(
-        Uri.parse('http://10.220.130.119:8000/api/data/create-folder'),
+        Uri.parse('http://pe-vnmbd-nvidia-cns.myfiinet.com:8000/api/data/create-folder'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'path': currentPath, 'folderName': folderName}),
       ).timeout(const Duration(seconds: 30));
@@ -121,7 +121,7 @@ class DatacloudProvider with ChangeNotifier {
       final currentPath = normalizePath(_pathHistory.last);
       var request = http.MultipartRequest(
         isFolder ? 'POST' : 'POST',
-        Uri.parse('http://10.220.130.119:8000/api/data/${isFolder ? 'upload-folder' : 'upload-file'}'),
+        Uri.parse('http://pe-vnmbd-nvidia-cns.myfiinet.com:8000/api/data/${isFolder ? 'upload-folder' : 'upload-file'}'),
       );
       request.fields['path'] = currentPath;
 
