@@ -43,8 +43,6 @@ dependencies:
   connectivity_plus: ^5.0.2
   flutter_launcher_icons: ^0.14.3
   vibration: ^2.0.0
-  sqflite: ^2.3.0
-  path_provider: ^2.1.1
 
 dev_dependencies:
   flutter_test:
