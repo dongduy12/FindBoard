@@ -7,7 +7,6 @@ import 'package:http/io_client.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../../../core/error/exceptions.dart';
-import '../../data/datasources/local_datasource.dart';
 import '../../domain/entities/code_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/search_list_entity.dart';
@@ -15,7 +14,6 @@ import '../../domain/usecases/manage_codes_usecase.dart';
 
 class CodeProvider with ChangeNotifier {
   final ManageCodesUseCase useCase;
-  final LocalDataSource localDataSource;
   final Connectivity connectivity;
 
   List<SearchListEntity> _searchLists = [];
@@ -76,7 +74,6 @@ class CodeProvider with ChangeNotifier {
 
   CodeProvider({
     required this.useCase,
-    required this.localDataSource,
     required this.connectivity,
   });
 
@@ -148,22 +145,16 @@ class CodeProvider with ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    bool online = await _isConnected();
-    if (online) {
-      try {
-        _searchLists = await useCase.getSearchList();
-        await localDataSource.saveSearchLists(_searchLists);
-      } catch (e) {
-        _error = e.toString();
-        print('Fetch error: $_error');
-      }
+    if (!await _isConnected()) {
+      _error = 'Không có kết nối mạng';
+      _isLoading = false;
+      notifyListeners();
+      return;
     }
-    if (!online || _searchLists.isEmpty) {
-      try {
-        _searchLists = await localDataSource.getSearchLists();
-      } catch (e) {
-        _error ??= e.toString();
-      }
+    try {
+      _searchLists = await useCase.getSearchList();
+    } catch (e) {
+      _error = e.toString();
     }
     _selectedSearchListIndex = null;
     _recentlyScannedCodes = [];
@@ -180,11 +171,7 @@ class CodeProvider with ChangeNotifier {
         _orderedFoundCodes.insert(0, serialNumber);
         _recentlyScannedCodes.insert(0, serialNumber);
       } else {
-        bool online = await _isConnected();
-        if (online) {
-          await useCase.updateScannedStatus(searchListId, serialNumber, isScanned);
-        }
-        await localDataSource.updateFoundStatus(serialNumber, searchListId.toString(), isScanned);
+        await useCase.updateScannedStatus(searchListId, serialNumber, isScanned);
         _foundCodes.add(serialNumber);
         _orderedFoundCodes.insert(0, serialNumber);
         _recentlyScannedCodes.insert(0, serialNumber);
@@ -212,23 +199,6 @@ class CodeProvider with ChangeNotifier {
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
-    }
-  }
-
-  Future<void> syncFoundCodes() async {
-    if (!await _isConnected()) return;
-    try {
-      final lists = await localDataSource.getSearchLists();
-      for (var list in lists) {
-        final found = await localDataSource.getFoundCodesByListId(list.id);
-        for (var code in found) {
-          try {
-            await useCase.updateScannedStatus(int.parse(list.id), code.serialNumber, true);
-          } catch (_) {}
-        }
-      }
-    } catch (e) {
-      print('syncFoundCodes error: $e');
     }
   }
 

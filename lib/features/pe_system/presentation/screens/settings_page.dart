@@ -4,7 +4,6 @@
 // AppBar: Đồng bộ màu với theme (AppColors.background hoặc Colors.grey[900]).
 // Log: Thêm print để debug khi theme thay đổi.
 
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/colors.dart';
@@ -52,35 +51,45 @@ class SettingsPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      DropdownButton<ThemeMode>(
-                        value: themeProvider.themeMode,
-                        dropdownColor: isDarkMode ? Colors.grey[700] : Colors.white,
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black87,
-                          fontSize: 16,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isDarkMode ? Colors.white70 : Colors.black54,
+                          ),
                         ),
-                        underline: const SizedBox(),
-                        iconEnabledColor: isDarkMode ? Colors.white : Colors.black87,
-                        items: [
-                          DropdownMenuItem(
-                            value: ThemeMode.system,
-                            child: Text(AppLocalizations.of(context, 'system')),
+                        child: DropdownButton<ThemeMode>(
+                          value: themeProvider.themeMode,
+                          dropdownColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                            fontSize: 16,
                           ),
-                          DropdownMenuItem(
-                            value: ThemeMode.light,
-                            child: Text(AppLocalizations.of(context, 'light')),
-                          ),
-                          DropdownMenuItem(
-                            value: ThemeMode.dark,
-                            child: Text(AppLocalizations.of(context, 'dark')),
-                          ),
-                        ],
-                        onChanged: (ThemeMode? value) {
-                          if (value != null) {
-                            themeProvider.setThemeMode(value);
-                            print('Theme changed to: $value');
-                          }
-                        },
+                          underline: const SizedBox(),
+                          iconEnabledColor: isDarkMode ? Colors.white : Colors.black87,
+                          items: [
+                            DropdownMenuItem(
+                              value: ThemeMode.system,
+                              child: Text(AppLocalizations.of(context, 'system')),
+                            ),
+                            DropdownMenuItem(
+                              value: ThemeMode.light,
+                              child: Text(AppLocalizations.of(context, 'light')),
+                            ),
+                            DropdownMenuItem(
+                              value: ThemeMode.dark,
+                              child: Text(AppLocalizations.of(context, 'dark')),
+                            ),
+                          ],
+                          onChanged: (ThemeMode? value) {
+                            if (value != null) {
+                              themeProvider.setThemeMode(value);
+                              print('Theme changed to: $value');
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -111,34 +120,44 @@ class SettingsPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      DropdownButton<Locale>(
-                        value: languageProvider.locale,
-                        dropdownColor: isDarkMode ? Colors.grey[700] : Colors.white,
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black87,
-                          fontSize: 16,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isDarkMode ? Colors.white70 : Colors.black54,
+                          ),
                         ),
-                        underline: const SizedBox(),
-                        iconEnabledColor: isDarkMode ? Colors.white : Colors.black87,
-                        items: [
-                          DropdownMenuItem(
-                            value: const Locale('vi'),
-                            child: Text(AppLocalizations.of(context, 'vietnamese')),
+                        child: DropdownButton<Locale>(
+                          value: languageProvider.locale,
+                          dropdownColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                            fontSize: 16,
                           ),
-                          DropdownMenuItem(
-                            value: const Locale('en'),
-                            child: Text(AppLocalizations.of(context, 'english')),
-                          ),
-                          DropdownMenuItem(
-                            value: const Locale('zh'),
-                            child: Text(AppLocalizations.of(context, 'chinese')),
-                          ),
-                        ],
-                        onChanged: (Locale? value) {
-                          if (value != null) {
-                            languageProvider.setLocale(value);
-                          }
-                        },
+                          underline: const SizedBox(),
+                          iconEnabledColor: isDarkMode ? Colors.white : Colors.black87,
+                          items: [
+                            DropdownMenuItem(
+                              value: const Locale('vi'),
+                              child: Text(AppLocalizations.of(context, 'vietnamese')),
+                            ),
+                            DropdownMenuItem(
+                              value: const Locale('en'),
+                              child: Text(AppLocalizations.of(context, 'english')),
+                            ),
+                            DropdownMenuItem(
+                              value: const Locale('zh'),
+                              child: Text(AppLocalizations.of(context, 'chinese')),
+                            ),
+                          ],
+                          onChanged: (Locale? value) {
+                            if (value != null) {
+                              languageProvider.setLocale(value);
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

@@ -168,7 +168,6 @@ class _PESystemScreenState extends State<PESystemScreen> {
 
   void _syncSearchLists() async {
     final provider = Provider.of<CodeProvider>(context, listen: false);
-    await provider.syncFoundCodes();
     await provider.fetchSearchList();
     print('Sync search lists triggered');
   }
@@ -214,6 +213,7 @@ class _PESystemScreenState extends State<PESystemScreen> {
                               constraints: const BoxConstraints(maxWidth: 150),
                               child: DropdownButton<int>(
                                 isExpanded: true,
+                                borderRadius: BorderRadius.circular(12),
                                 value: provider.selectedSearchListIndex,
                                 hint: const Text('Chọn danh sách'),
                                 items: provider.searchLists
