@@ -55,6 +55,7 @@ class SettingsPage extends StatelessWidget {
                       DropdownButton<ThemeMode>(
                         value: themeProvider.themeMode,
                         dropdownColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
                         style: TextStyle(
                           color: isDarkMode ? Colors.white : Colors.black87,
                           fontSize: 16,
@@ -114,6 +115,7 @@ class SettingsPage extends StatelessWidget {
                       DropdownButton<Locale>(
                         value: languageProvider.locale,
                         dropdownColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
                         style: TextStyle(
                           color: isDarkMode ? Colors.white : Colors.black87,
                           fontSize: 16,

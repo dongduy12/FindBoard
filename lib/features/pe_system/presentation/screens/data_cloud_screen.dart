@@ -192,7 +192,9 @@ class _DataCloudScreenState extends State<DataCloudScreen> {
                         child: Card(
                           elevation: 2,
                           margin: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.all(16),
                             leading: Icon(

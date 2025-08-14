@@ -143,23 +143,24 @@ class _RetestScreenState extends State<RetestScreen> {
                     ),
                     const SizedBox(height: 24),
                     DropdownButtonFormField<String>(
+                      borderRadius: BorderRadius.circular(12),
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context, 'selectStatus'),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primary),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       value: provider.retestResult,
-                      items: ['Pass', 'Fail                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          '].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: ['Pass', 'Fail']
+                          .map((String value) => DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              ))
+                          .toList(),
                       onChanged: (value) {
                         provider.setRetestResult(value);
                       },

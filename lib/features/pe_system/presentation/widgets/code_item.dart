@@ -21,7 +21,7 @@ class CodeItem extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       color: isFound ? AppColors.foundCode : Colors.white,
       child: Padding(

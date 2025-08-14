@@ -200,6 +200,7 @@ class _PESystemScreenState extends State<PESystemScreen> {
                               constraints: const BoxConstraints(maxWidth: 150),
                               child: DropdownButton<int>(
                                 isExpanded: true,
+                                borderRadius: BorderRadius.circular(12),
                                 value: provider.selectedSearchListIndex,
                                 hint: const Text('Chọn danh sách'),
                                 items: provider.searchLists
